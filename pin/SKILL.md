@@ -1,6 +1,7 @@
 ---
 name: pin
 description: "把当前排查/讨论自动总结成一条可审计的笔记，并写入 memory/YYYY-MM-DD.md；必要时创建独立 investigation notes 并在 daily note 里引用。"
+user-invocable: true
 ---
 
 # /pin — 自动落盘（daily note + 可选独立调查笔记）
