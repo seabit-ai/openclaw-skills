@@ -10,9 +10,11 @@ from pathlib import Path
 
 
 def now_local_iso_ms():
-    # local time with ms
+    # local time with milliseconds
     dt = datetime.now().astimezone()
-    return dt.strftime('%Y-%m-%d %H:%M:%S.%f %Z')[:-3]  # trim to ms
+    base = dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+    tz = dt.strftime('%Z')
+    return f"{base} {tz}".strip()
 
 
 def resolve_workspace_auto():
@@ -45,13 +47,16 @@ def slugify(s: str) -> str:
     return s or 'notes'
 
 
-def ensure_file(path: Path, header: str | None = None):
+from typing import Optional
+
+
+def ensure_file(path: Path, header: Optional[str] = None):
     path.parent.mkdir(parents=True, exist_ok=True)
     if not path.exists():
         path.write_text((header or '') + ('\n' if header else ''), encoding='utf-8')
 
 
-def append_daily_pin(daily_path: Path, title: str, body_md: str, when: str, ref_path: str | None):
+def append_daily_pin(daily_path: Path, title: str, body_md: str, when: str, ref_path: Optional[str]):
     ensure_file(daily_path, header=f"# {daily_path.stem}")
 
     lines = []
@@ -64,11 +69,10 @@ def append_daily_pin(daily_path: Path, title: str, body_md: str, when: str, ref_
     if ref_path:
         lines.append("")
         lines.append(f"详见：`{ref_path}`")
-    lines.append("
-")
+    lines.append("")
 
     with daily_path.open('a', encoding='utf-8') as f:
-        f.write("\n".join(lines))
+        f.write("\n".join(lines) + "\n")
 
 
 def write_investigation(path: Path, title: str, body_md: str, when: str):
@@ -91,6 +95,8 @@ def main():
     daily = ws / 'memory' / f'{today}.md'
 
     user_text = (args.input or '').strip()
+    # Allow callers to pass literal "\\n" sequences.
+    user_text = user_text.replace('\\r\\n', '\n').replace('\\n', '\n')
 
     # Heuristics
     want_investigation = False

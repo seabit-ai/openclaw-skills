@@ -43,10 +43,10 @@ description: "把当前排查/讨论自动总结成一条可审计的笔记，�
 2) 用 `exec` 在 **gateway host** 运行（本机）:
 
 ```bash
-python3 <this_skill_dir>/scripts/pin.py \
+python3 <workspace>/skills/pin/scripts/pin.py \
   --input "<用户输入或空>" \
-  --create-investigation "auto" \
-  --workspace "auto"
+  --create-investigation auto \
+  --workspace auto
 ```
 
 - `--workspace auto`：脚本按以下顺序定位 workspace：
